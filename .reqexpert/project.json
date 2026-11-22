@@ -1,0 +1,114 @@
+{
+  "projectName": "reqexpert",
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "First requirement",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Система должна позволять создавать и редактировать требования. Критерии приёмки: наличие интерфейса для добавления/редактирования требований, сохранность данных, корректная валидация.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Система должна позволять создавать требования. Система должна обеспечивать возможность редактирования требований.",
+      "dependencies": []
+    },
+    {
+      "id": "FR-002",
+      "title": "Second requirement",
+      "type": "Функциональное",
+      "priority": "Should",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Система должна хранить требования в базе данных и обеспечивать возможность их поиска и получения.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Система должна обеспечивать возможность сохранения требований. Система должна предоставлять интерфейс для их чтения/записи.",
+      "dependencies": []
+    }
+  ],
+  "stakeholders": [
+    {
+      "id": 1,
+      "name": "Product Owner",
+      "role": "Product Owner",
+      "involvement": "Высокая"
+    }
+  ],
+  "businessRules": [],
+  "expertRules": [
+    {
+      "id": "D25",
+      "name": "Проверка атомарности требований",
+      "type": "Структура",
+      "description": "Требование должно быть атомарным (описывать одну функциональность)",
+      "checkLogic": "function checkRequirement(requirement) {\n      const issues = [];\n      const title = requirement.title || '';\n      const description = requirement.description || '';\n      const conjunctions = [' и ', ', а также ', ', также ', ', кроме ', ', плюс '];\n      if (conjunctions.some(c => title.includes(c) || description.includes(c))) {\n        issues.push('Требование может быть составным. Разделите на несколько атомарных требований.');\n      }\n      if (description.split('.').filter(Boolean).length > 3) {\n        issues.push('Описание слишком длинное и может содержать несколько функциональностей.');\n      }\n      return {\n        pass: issues.length === 0,\n        message: issues.length === 0 ? 'Требование атомарно' : 'Нарушение атомарности',\n        issues\n      };\n    }",
+      "example": "Система должна позволять создавать и редактировать требования",
+      "strictness": "high",
+      "category": "Качество требований",
+      "active": true
+    },
+    {
+      "id": "D26",
+      "name": "Проверка неоднозначных терминов",
+      "type": "Неоднозначность",
+      "description": "Проверка на наличие субъективных и неизмеримых терминов",
+      "checkLogic": "function checkRequirement(requirement) {\n      const issues = [];\n      const text = (requirement.title + ' ' + requirement.description).toLowerCase();\n      const terms = [\n        { term: 'быстро', suggestion: 'Укажите точное время отклика (например, \"< 2 сек\")' },\n        { term: 'удобно', suggestion: 'Укажите метрику UX (например, \"не более 3 кликов\")' },\n        { term: 'иногда', suggestion: 'Укажите точную частоту или условие' },\n        { term: 'часто', suggestion: 'Укажите количественный порог' },\n        { term: 'простой', suggestion: 'Опишите конкретные шаги сценария' },\n        { term: 'легко', suggestion: 'Укажите измеримый критерий освоения' }\n      ];\n      for (const item of terms) {\n        if (text.includes(item.term)) {\n          issues.push(`Неоднозначный термин \"${item.term}\". ${item.suggestion}`);\n        }\n      }\n      return {\n        pass: issues.length === 0,\n        message: issues.length === 0 ? 'Неоднозначностей не найдено' : `Найдено терминов: ${issues.length}`,\n        issues\n      };\n    }",
+      "example": "Система должна работать быстро и удобно",
+      "strictness": "medium",
+      "category": "Качество требований",
+      "active": true
+    },
+    {
+      "id": "H78",
+      "name": "Обязательность критериев приемки",
+      "type": "Полнота",
+      "description": "Требование должно содержать детализированные критерии приемки",
+      "checkLogic": "function checkRequirement(requirement) {\n      const issues = [];\n      if (!requirement.acceptanceCriteria || requirement.acceptanceCriteria.trim() === '') {\n        issues.push('Отсутствуют критерии приемки (acceptanceCriteria)');\n      } else if (requirement.acceptanceCriteria.trim().length < 20) {\n        issues.push('Критерии приемки слишком кратки (< 20 символов). Детализируйте условия проверки.');\n      }\n      return {\n        pass: issues.length === 0,\n        message: issues.length === 0 ? 'Критерии приемки корректны' : 'Проблемы с критериями приемки',\n        issues\n      };\n    }",
+      "example": "Требование без критериев приемки",
+      "strictness": "high",
+      "category": "Полнота требований",
+      "active": true
+    }
+  ],
+  "activities": [
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-002",
+      "timestamp": 1795367906247
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-002",
+      "timestamp": 1795367896332
+    },
+    {
+      "type": "stakeholder",
+      "message": "Добавлено заинтересованное лицо: Product Owner",
+      "timestamp": 1795367707101
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-001",
+      "timestamp": 1795367675297
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-001",
+      "timestamp": 1795367666346
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-001",
+      "timestamp": 1795367634604
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-001",
+      "timestamp": 1795367526653
+    }
+  ]
+}
