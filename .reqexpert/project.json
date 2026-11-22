@@ -28,6 +28,34 @@
       "complexity": "Средняя",
       "description": "Система должна обеспечивать возможность сохранения требований. Система должна предоставлять интерфейс для их чтения/записи.",
       "dependencies": []
+    },
+    {
+      "id": "FR-003",
+      "title": "Third requirement",
+      "type": "Функциональное",
+      "priority": "Should",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Система должна обеспечивать безопасность и целостность данных требований.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Требуется обеспечение безопасности данных требований. Требуется целостность данных требований.",
+      "dependencies": []
+    },
+    {
+      "id": "FR-004",
+      "title": "Fourth requirement",
+      "type": "Функциональное",
+      "priority": "Should",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Система должна генерировать отчеты на основе требований и обеспечивать их доступность.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Требуется генерация отчетов из требований.",
+      "dependencies": []
     }
   ],
   "stakeholders": [
@@ -75,6 +103,21 @@
     }
   ],
   "activities": [
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-004",
+      "timestamp": 1795368090836
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-003",
+      "timestamp": 1795368051171
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-003",
+      "timestamp": 1795368045608
+    },
     {
       "type": "requirement",
       "message": "Обновлено требование FR-002",
