@@ -3,16 +3,16 @@
   "requirements": [
     {
       "id": "FR-001",
-      "title": "First requirement",
+      "title": "Orchestration of LLM agents via workflow with context transfer through MCP",
       "type": "Функциональное",
       "priority": "Must",
       "status": "Предложено",
       "source": "",
-      "acceptanceCriteria": "Система должна позволять создавать и редактировать требования. Критерии приёмки: наличие интерфейса для добавления/редактирования требований, сохранность данных, корректная валидация.",
+      "acceptanceCriteria": "Launch within 5 seconds; atomicity enforced; traceId logged.",
       "testability": "Высокая",
       "stability": "Высокая",
       "complexity": "Средняя",
-      "description": "Система должна позволять создавать требования. Система должна обеспечивать возможность редактирования требований.",
+      "description": "Workflow consists of 5 agents; on agent failure retry/escalate; step-by-step traceId; launch ≤5 sec.",
       "dependencies": []
     },
     {
@@ -56,6 +56,160 @@
       "complexity": "Средняя",
       "description": "Требуется генерация отчетов из требований.",
       "dependencies": []
+    },
+    {
+      "id": "FR-005",
+      "title": "Automatic Ingestion of User Requirements",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "Upon receiving user input containing requirement statements, the system extracts and persists each statement.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "The system must detect and ingest user-requested requirements from natural language input and store them.",
+      "dependencies": []
+    },
+    {
+      "id": "FR-006",
+      "title": "LLM-driven Candidate Generation",
+      "type": "Функциональное",
+      "priority": "Should",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "Generated candidates satisfy user intent and are displayed in readable format.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Generate candidate requirements using LLM agents and present suggestions to the user.",
+      "dependencies": []
+    },
+    {
+      "id": "FR-007",
+      "title": "Persistent Storage in MCP Server",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "Requirements survive server restarts and modifications are tracked.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Store requirements persistently in the MCP server database with version control.",
+      "dependencies": []
+    },
+    {
+      "id": "FR-008",
+      "title": "CRUD Operations on Requirements",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "Each operation succeeds or fails appropriately with proper error handling.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Support create, read, update, and delete operations on requirement records.",
+      "dependencies": []
+    },
+    {
+      "id": "FR-009",
+      "title": "Natural Language Translation Layer",
+      "type": "Функциональное",
+      "priority": "Should",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "Translation accuracy meets user-defined benchmarks and latency ≤ 200 ms.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Translate natural language user input into machine-readable requirement formats and vice versa.",
+      "dependencies": []
+    },
+    {
+      "id": "NFR-001",
+      "title": "High Availability & Failover",
+      "type": "Нефункциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "System remains accessible during planned maintenance and recovers within SLA.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Ensure 99.9% uptime with automatic failover mechanisms for server failures.",
+      "dependencies": []
+    },
+    {
+      "id": "NFR-002",
+      "title": "Low Latency Processing",
+      "type": "Нефункциональное",
+      "priority": "Should",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "Latency measured under peak load stays below threshold.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Ingestion and retrieval latency ≤ 200 ms for all requirement operations.",
+      "dependencies": []
+    },
+    {
+      "id": "NFR-003",
+      "title": "Encryption & Secure Transmission",
+      "type": "Нефункциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "All stored and transmitted data is unreadable without keys/certificates.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Encrypt data at rest (AES-256) and in transit (TLS 1.3).",
+      "dependencies": []
+    },
+    {
+      "id": "NFR-004",
+      "title": "Auditability & Traceability",
+      "type": "Нефункциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "Audit logs are immutable and retrievable for compliance.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Log every change to requirements with timestamps and user identifiers.",
+      "dependencies": []
+    },
+    {
+      "id": "NFR-005",
+      "title": "Scalability & Concurrency",
+      "type": "Нефункциональное",
+      "priority": "Should",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "System maintains response time under load and scales resources automatically.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Handle up to 10,000 concurrent sessions and scale horizontally.",
+      "dependencies": []
+    },
+    {
+      "id": "FR-010",
+      "title": "Ingestion sources: PDF, DOCX, MD, JSON, CSV, transcripts, tickets",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "Project Requirements Development",
+      "acceptanceCriteria": "Load ≥6 formats; extraction works; source preserved; parse errors logged.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Load ≥6 formats; extract text; save source; log parsing errors.",
+      "dependencies": []
     }
   ],
   "stakeholders": [
@@ -64,6 +218,54 @@
       "name": "Product Owner",
       "role": "Product Owner",
       "involvement": "Высокая"
+    },
+    {
+      "id": 2,
+      "name": "Аналитик требований",
+      "role": "Системный аналитик / архитектор требований",
+      "involvement": "Высокая"
+    },
+    {
+      "id": 3,
+      "name": "Product Owner",
+      "role": "Product Owner",
+      "involvement": "Высокая"
+    },
+    {
+      "id": 4,
+      "name": "Системный архитектор",
+      "role": "Системный архитектор",
+      "involvement": "Высокая"
+    },
+    {
+      "id": 5,
+      "name": "QA-эксперт",
+      "role": "QA-эксперт по качеству требований",
+      "involvement": "Средняя"
+    },
+    {
+      "id": 6,
+      "name": "Технический писатель",
+      "role": "Технический писатель / конфигурационный менеджер",
+      "involvement": "Средняя"
+    },
+    {
+      "id": 7,
+      "name": "Compliance-офицер",
+      "role": "Compliance Officer",
+      "involvement": "Низкая"
+    },
+    {
+      "id": 8,
+      "name": "Интегратор СУТр",
+      "role": "Интегратор СУТр",
+      "involvement": "Средняя"
+    },
+    {
+      "id": 9,
+      "name": "LLM-инженер",
+      "role": "LLM-инженер",
+      "involvement": "Средняя"
     }
   ],
   "businessRules": [],
@@ -103,6 +305,106 @@
     }
   ],
   "activities": [
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-010",
+      "timestamp": 1795422325447
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-001",
+      "timestamp": 1795422315210
+    },
+    {
+      "type": "stakeholder",
+      "message": "Добавлено заинтересованное лицо: LLM-инженер",
+      "timestamp": 1795422268444
+    },
+    {
+      "type": "stakeholder",
+      "message": "Добавлено заинтересованное лицо: Интегратор СУТр",
+      "timestamp": 1795422268420
+    },
+    {
+      "type": "stakeholder",
+      "message": "Добавлено заинтересованное лицо: Compliance-офицер",
+      "timestamp": 1795422268390
+    },
+    {
+      "type": "stakeholder",
+      "message": "Добавлено заинтересованное лицо: Технический писатель",
+      "timestamp": 1795422268351
+    },
+    {
+      "type": "stakeholder",
+      "message": "Добавлено заинтересованное лицо: QA-эксперт",
+      "timestamp": 1795422268330
+    },
+    {
+      "type": "stakeholder",
+      "message": "Добавлено заинтересованное лицо: Системный архитектор",
+      "timestamp": 1795422268310
+    },
+    {
+      "type": "stakeholder",
+      "message": "Добавлено заинтересованное лицо: Product Owner",
+      "timestamp": 1795422268294
+    },
+    {
+      "type": "stakeholder",
+      "message": "Добавлено заинтересованное лицо: Аналитик требований",
+      "timestamp": 1795422268274
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование NFR-005",
+      "timestamp": 1795421742711
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование NFR-004",
+      "timestamp": 1795421742687
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование NFR-003",
+      "timestamp": 1795421742670
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование NFR-002",
+      "timestamp": 1795421742650
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование NFR-001",
+      "timestamp": 1795421742628
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-009",
+      "timestamp": 1795421732730
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-008",
+      "timestamp": 1795421732705
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-007",
+      "timestamp": 1795421732690
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-006",
+      "timestamp": 1795421732676
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-005",
+      "timestamp": 1795421732659
+    },
     {
       "type": "requirement",
       "message": "Добавлено требование FR-004",
