@@ -4,7 +4,6 @@ import * as z from 'zod/v4';
 import { ProjectStore } from './core/store.js';
 import { ReqExpertEngine } from './domain/engine.js';
 import {
-  BusinessRuleSchema,
   ExpertRuleSchema,
   LevelSchema,
   PriorityMoSCoWSchema,
@@ -15,7 +14,7 @@ import {
 const store = new ProjectStore(process.env.REQEXPERT_WORKSPACE || process.cwd());
 const engine = new ReqExpertEngine(store);
 
-const server = new McpServer({ name: 'reqexpert-mcp', version: '1.1.0' });
+const server = new McpServer({ name: 'reqexpert-mcp', version: '1.2.0' });
 
 // ---------- RESOURCES ----------
 server.registerResource(
@@ -55,7 +54,7 @@ server.registerTool(
   {
     title: 'Добавить требование',
     description:
-      'Создает новое требование, автоматически присваивает ID (FR-XXX/NFR-XXX) и сразу проверяет его по активным правилам ЭС (D25, D26, H78).',
+      'Создает новое требование, автоматически присваивает ID (FR-XXX/NFR-XXX) и проверяет по активным правилам ЭС (D25, D26, H78, T01).',
     inputSchema: z.object({
       title: z.string(),
       type: RequirementTypeSchema.optional(),
@@ -64,6 +63,8 @@ server.registerTool(
       acceptanceCriteria: z.string().optional(),
       source: z.string().optional(),
       dependencies: z.array(z.string()).optional(),
+      codeRefs: z.array(z.string()).optional().describe('Пути к файлам реализации'),
+      verifiedBy: z.array(z.string()).optional().describe('ID тест-кейсов'),
     }),
   },
   async (args) => json(await engine.addRequirement(args))
@@ -97,6 +98,8 @@ server.registerTool(
       stability: LevelSchema.optional(),
       complexity: LevelSchema.optional(),
       dependencies: z.array(z.string()).optional(),
+      codeRefs: z.array(z.string()).optional(),
+      verifiedBy: z.array(z.string()).optional(),
     }),
   },
   async ({ id, ...patch }) => json(await engine.updateRequirement(id, patch))
@@ -121,7 +124,7 @@ server.registerTool(
   {
     title: 'Поиск требований',
     description:
-      'Фильтрация требований по ключевому слову (id/title/description/criteria/source), типу, приоритету MoSCoW, статусу, source, тестируемости, стабильности. Возвращает краткие карточки.',
+      'Фильтрация требований по ключевому слову, типу, приоритету MoSCoW, статусу, source, тестируемости, стабильности, наличию трассировки (hasCodeRefs / hasTests). Возвращает краткие карточки.',
     inputSchema: z.object({
       keyword: z.string().optional(),
       type: RequirementTypeSchema.optional(),
@@ -130,10 +133,109 @@ server.registerTool(
       source: z.string().optional(),
       testability: LevelSchema.optional(),
       stability: LevelSchema.optional(),
+      hasCodeRefs: z.boolean().optional().describe('true — только с привязкой к коду, false — только без'),
+      hasTests: z.boolean().optional().describe('true — только с тестами, false — только без'),
       limit: z.number().int().positive().optional(),
     }),
   },
   async (filter) => json(await engine.searchRequirements(filter))
+);
+
+// ==================== TRACEABILITY ====================
+server.registerTool(
+  'link_code_ref',
+  {
+    title: 'Привязать файл кода к требованию',
+    description:
+      'Добавляет путь к файлу реализации в codeRefs требования. По умолчанию валидирует существование файла в workspace (отключить — validate=false).',
+    inputSchema: z.object({
+      requirementId: z.string().describe('ID требования, например FR-001'),
+      path: z.string().describe('Путь к файлу относительно workspace, например src/auth/login.ts'),
+      validate: z
+        .boolean()
+        .optional()
+        .describe('Проверять существование файла (по умолчанию true)'),
+    }),
+  },
+  async ({ requirementId, path, validate }) =>
+    json(await engine.linkCodeRef(requirementId, path, { validate }))
+);
+
+server.registerTool(
+  'unlink_code_ref',
+  {
+    title: 'Отвязать файл кода от требования',
+    inputSchema: z.object({
+      requirementId: z.string(),
+      path: z.string(),
+    }),
+  },
+  async ({ requirementId, path }) => json(await engine.unlinkCodeRef(requirementId, path))
+);
+
+server.registerTool(
+  'link_test_ref',
+  {
+    title: 'Привязать тест к требованию',
+    description: 'Добавляет ID тест-кейса в verifiedBy требования (без проверки существования).',
+    inputSchema: z.object({
+      requirementId: z.string(),
+      testId: z.string().describe('ID теста, например TC-001 или tests/login.spec.ts#L42'),
+    }),
+  },
+  async ({ requirementId, testId }) => json(await engine.linkTestRef(requirementId, testId))
+);
+
+server.registerTool(
+  'unlink_test_ref',
+  {
+    title: 'Отвязать тест от требования',
+    inputSchema: z.object({
+      requirementId: z.string(),
+      testId: z.string(),
+    }),
+  },
+  async ({ requirementId, testId }) => json(await engine.unlinkTestRef(requirementId, testId))
+);
+
+server.registerTool(
+  'coverage_report',
+  {
+    title: 'Отчёт о покрытии требований кодом и тестами',
+    description:
+      'Показывает, какие требования покрыты codeRefs и verifiedBy. По умолчанию — только Must-требования (наиболее критичны).',
+    inputSchema: z.object({
+      priority: z
+        .union([PriorityMoSCoWSchema, z.literal('all')])
+        .optional()
+        .describe('Скоуп: Must / Should / Could / Wont / all (по умолчанию Must)'),
+    }),
+  },
+  async ({ priority }) => json(await engine.coverageReport({ priority }))
+);
+
+server.registerTool(
+  'find_orphan_code',
+  {
+    title: 'Найти файлы кода без привязки к требованиям',
+    description:
+      'Рекурсивно сканирует каталог (по умолчанию src) и возвращает файлы, на которые не ссылается ни одно требование через codeRefs.',
+    inputSchema: z.object({
+      dir: z.string().optional().describe('Подкаталог workspace (по умолчанию src)'),
+      extensions: z
+        .array(z.string())
+        .optional()
+        .describe('Расширения файлов, например [".ts", ".tsx"]'),
+      limit: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe('Максимум файлов для обхода (по умолчанию 500)'),
+    }),
+  },
+  async ({ dir, extensions, limit }) =>
+    json(await engine.findOrphanCode({ dir, extensions, limit }))
 );
 
 // ==================== STAKEHOLDERS ====================
@@ -314,6 +416,8 @@ server.registerTool(
   'analyze_impact',
   {
     title: 'Анализ влияния изменений',
+    description:
+      'Определяет зависимые требования, пересечения по коду и тестам, оценивает риск изменения.',
     inputSchema: z.object({ id: z.string() }),
   },
   async ({ id }) => json(await engine.analyzeImpact(id))

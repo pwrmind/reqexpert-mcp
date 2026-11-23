@@ -31,6 +31,15 @@ export const RequirementSchema = z.object({
   complexity: LevelSchema.default('Средняя'),
   description: z.string().default(''),
   dependencies: z.array(z.string()).default([]),
+  // v1.2: трассировка
+  codeRefs: z
+    .array(z.string())
+    .default([])
+    .describe('Пути к файлам реализации относительно workspace'),
+  verifiedBy: z
+    .array(z.string())
+    .default([])
+    .describe('ID тест-кейсов / тестов, верифицирующих требование'),
 });
 
 export const StakeholderSchema = z.object({

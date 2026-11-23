@@ -12,6 +12,8 @@ export interface RequirementSearchFilter {
   source?: string;
   testability?: Requirement['testability'];
   stability?: Requirement['stability'];
+  hasCodeRefs?: boolean;
+  hasTests?: boolean;
   limit?: number;
 }
 
@@ -33,6 +35,21 @@ export interface ExpertRuleSearchFilter {
   category?: string;
   active?: boolean;
 }
+
+export interface CoverageReportOptions {
+  priority?: Requirement['priority'] | 'all';
+}
+
+export interface FindOrphanCodeOptions {
+  dir?: string;
+  extensions?: string[];
+  limit?: number;
+}
+
+const DEFAULT_CODE_EXTENSIONS = [
+  '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs',
+  '.py', '.java', '.go', '.cs', '.rb', '.php', '.kt', '.rs',
+];
 
 export class ReqExpertEngine {
   constructor(private store: ProjectStore) {}
@@ -60,6 +77,10 @@ export class ReqExpertEngine {
     return `BR-${String(maxNum + 1).padStart(3, '0')}`;
   }
 
+  private normalizePath(raw: string): string {
+    return raw.trim().replace(/\\/g, '/');
+  }
+
   calculateScore(req: Requirement): number {
     let score = 0;
     if (req.acceptanceCriteria.trim().length > 0) score += 40;
@@ -69,7 +90,9 @@ export class ReqExpertEngine {
     if (req.stability === 'Высокая') score += 10;
     else if (req.stability === 'Средняя') score += 5;
     if (req.description.trim().length > 0) score += 10;
-    return Math.min(100, score);
+    // v1.2: штраф за отсутствие трассировки у Must-требований
+    if (req.priority === 'Must' && req.codeRefs.length === 0) score -= 10;
+    return Math.max(0, Math.min(100, score));
   }
 
   validateRequirementObject(state: ProjectState, req: Requirement): RuleCheckResult[] {
@@ -177,6 +200,12 @@ export class ReqExpertEngine {
       if (filter.testability && r.testability !== filter.testability) return false;
       if (filter.stability && r.stability !== filter.stability) return false;
       if (filter.source && r.source !== filter.source) return false;
+      if (filter.hasCodeRefs !== undefined) {
+        if ((r.codeRefs.length > 0) !== filter.hasCodeRefs) return false;
+      }
+      if (filter.hasTests !== undefined) {
+        if ((r.verifiedBy.length > 0) !== filter.hasTests) return false;
+      }
       if (kw) {
         const hay = [r.id, r.title, r.description, r.acceptanceCriteria, r.source]
           .join(' ')
@@ -198,7 +227,173 @@ export class ReqExpertEngine {
         priority: r.priority,
         status: r.status,
         qualityScore: this.calculateScore(r),
+        codeRefsCount: r.codeRefs.length,
+        testsCount: r.verifiedBy.length,
       })),
+    };
+  }
+
+  // ======================= TRACEABILITY =======================
+
+  async linkCodeRef(
+    requirementId: string,
+    rawPath: string,
+    options: { validate?: boolean } = {}
+  ) {
+    const state = await this.store.load();
+    const req = state.requirements.find((r) => r.id === requirementId);
+    if (!req) throw new Error(`Требование ${requirementId} не найдено`);
+
+    const normalized = this.normalizePath(rawPath);
+    if (!normalized) throw new Error('Путь codeRef не может быть пустым');
+
+    if (req.codeRefs.includes(normalized)) {
+      return { requirement: req, added: false, reason: 'already-linked' as const };
+    }
+
+    if (options.validate !== false) {
+      const exists = await this.store.fileExists(normalized);
+      if (!exists) {
+        throw new Error(
+          `Файл ${normalized} не найден в workspace. Передайте validate=false, если файл будет создан позже.`
+        );
+      }
+    }
+
+    req.codeRefs.push(normalized);
+    this.logActivity(state, 'requirement', `Требование ${requirementId}: +codeRef ${normalized}`);
+    await this.store.save(state);
+    return { requirement: req, added: true };
+  }
+
+  async unlinkCodeRef(requirementId: string, rawPath: string) {
+    const state = await this.store.load();
+    const req = state.requirements.find((r) => r.id === requirementId);
+    if (!req) throw new Error(`Требование ${requirementId} не найдено`);
+
+    const normalized = this.normalizePath(rawPath);
+    const before = req.codeRefs.length;
+    req.codeRefs = req.codeRefs.filter((p) => p !== normalized);
+    const removed = req.codeRefs.length < before;
+
+    if (removed) {
+      this.logActivity(
+        state,
+        'requirement',
+        `Требование ${requirementId}: −codeRef ${normalized}`
+      );
+      await this.store.save(state);
+    }
+
+    return { requirementId, removed, remaining: req.codeRefs };
+  }
+
+  async linkTestRef(requirementId: string, rawTestId: string) {
+    const state = await this.store.load();
+    const req = state.requirements.find((r) => r.id === requirementId);
+    if (!req) throw new Error(`Требование ${requirementId} не найдено`);
+
+    const testId = rawTestId.trim();
+    if (!testId) throw new Error('testId не может быть пустым');
+
+    if (req.verifiedBy.includes(testId)) {
+      return { requirement: req, added: false, reason: 'already-linked' as const };
+    }
+
+    req.verifiedBy.push(testId);
+    this.logActivity(state, 'requirement', `Требование ${requirementId}: +test ${testId}`);
+    await this.store.save(state);
+    return { requirement: req, added: true };
+  }
+
+  async unlinkTestRef(requirementId: string, rawTestId: string) {
+    const state = await this.store.load();
+    const req = state.requirements.find((r) => r.id === requirementId);
+    if (!req) throw new Error(`Требование ${requirementId} не найдено`);
+
+    const testId = rawTestId.trim();
+    const before = req.verifiedBy.length;
+    req.verifiedBy = req.verifiedBy.filter((t) => t !== testId);
+    const removed = req.verifiedBy.length < before;
+
+    if (removed) {
+      this.logActivity(
+        state,
+        'requirement',
+        `Требование ${requirementId}: −test ${testId}`
+      );
+      await this.store.save(state);
+    }
+
+    return { requirementId, removed, remaining: req.verifiedBy };
+  }
+
+  async coverageReport(options: CoverageReportOptions = {}) {
+    const state = await this.store.load();
+    const scope = options.priority ?? 'Must';
+    const scoped =
+      scope === 'all'
+        ? state.requirements
+        : state.requirements.filter((r) => r.priority === scope);
+
+    const withCode = scoped.filter((r) => r.codeRefs.length > 0);
+    const withTests = scoped.filter((r) => r.verifiedBy.length > 0);
+    const fullyCovered = scoped.filter(
+      (r) => r.codeRefs.length > 0 && r.verifiedBy.length > 0
+    );
+
+    const uncovered = scoped
+      .filter((r) => r.codeRefs.length === 0 || r.verifiedBy.length === 0)
+      .map((r) => {
+        const missingBoth = r.codeRefs.length === 0 && r.verifiedBy.length === 0;
+        return {
+          id: r.id,
+          title: r.title,
+          priority: r.priority,
+          missing: missingBoth
+            ? ('both' as const)
+            : r.codeRefs.length === 0
+              ? ('code' as const)
+              : ('tests' as const),
+        };
+      });
+
+    const pct = (n: number) => (scoped.length === 0 ? 100 : Math.round((n / scoped.length) * 100));
+
+    return {
+      scope,
+      total: scoped.length,
+      withCode: withCode.length,
+      withTests: withTests.length,
+      fullyCovered: fullyCovered.length,
+      codeCoveragePercent: pct(withCode.length),
+      testCoveragePercent: pct(withTests.length),
+      fullCoveragePercent: pct(fullyCovered.length),
+      uncovered,
+    };
+  }
+
+  async findOrphanCode(options: FindOrphanCodeOptions = {}) {
+    const state = await this.store.load();
+    const dir = options.dir ?? 'src';
+    const extensions = options.extensions ?? DEFAULT_CODE_EXTENSIONS;
+    const limit = options.limit ?? 500;
+
+    const referenced = new Set<string>();
+    for (const r of state.requirements) {
+      for (const ref of r.codeRefs) referenced.add(this.normalizePath(ref));
+    }
+
+    const files = await this.store.walkFiles(dir, extensions, limit);
+    const orphans = files.filter((f) => !referenced.has(f));
+
+    return {
+      scannedDir: dir,
+      scannedFiles: files.length,
+      referencedTotal: referenced.size,
+      orphanCount: orphans.length,
+      truncated: files.length >= limit,
+      orphans,
     };
   }
 
@@ -410,11 +605,14 @@ export class ReqExpertEngine {
     const sameSource = target.source
       ? state.requirements.filter((r) => r.id !== id && r.source === target.source)
       : [];
+    const codeOverlaps = state.requirements.filter(
+      (r) => r.id !== id && r.codeRefs.some((ref) => target.codeRefs.includes(ref))
+    );
 
     const risk =
-      target.priority === 'Must' || directDependents.length >= 3
+      target.priority === 'Must' || directDependents.length >= 3 || codeOverlaps.length >= 2
         ? 'Высокий'
-        : directDependents.length > 0
+        : directDependents.length > 0 || codeOverlaps.length > 0
           ? 'Средний'
           : 'Низкий';
 
@@ -423,6 +621,9 @@ export class ReqExpertEngine {
       priority: target.priority,
       directDependents: directDependents.map((r) => ({ id: r.id, title: r.title })),
       relatedBySource: sameSource.map((r) => ({ id: r.id, title: r.title })),
+      codeRefs: target.codeRefs,
+      testsCovering: target.verifiedBy,
+      requirementsSharingCode: codeOverlaps.map((r) => ({ id: r.id, title: r.title })),
       risk,
     };
   }
@@ -452,17 +653,20 @@ export class ReqExpertEngine {
       }
     }
 
-    lines.push(
-      ``,
-      `## 3. Требования (${state.requirements.length})`,
-      ...state.requirements.map(
-        (r) =>
-          `### [${r.id}] ${r.title}\n` +
+    lines.push(``, `## 3. Требования (${state.requirements.length})`);
+
+    for (const r of state.requirements) {
+      const trace: string[] = [];
+      if (r.codeRefs.length > 0) trace.push(`code: ${r.codeRefs.join(', ')}`);
+      if (r.verifiedBy.length > 0) trace.push(`tests: ${r.verifiedBy.join(', ')}`);
+      lines.push(
+        `### [${r.id}] ${r.title}\n` +
           `- **Тип:** ${r.type} | **Приоритет:** ${r.priority} | **Статус:** ${r.status} | **Качество:** ${this.calculateScore(r)}%\n` +
           `- **Описание:** ${r.description || '—'}\n` +
-          `- **Критерии приемки:**\n${r.acceptanceCriteria || 'Не указаны'}\n`
-      )
-    );
+          `- **Критерии приемки:**\n${r.acceptanceCriteria || 'Не указаны'}\n` +
+          (trace.length > 0 ? `- **Трассировка:** ${trace.join(' | ')}\n` : '')
+      );
+    }
 
     return lines.join('\n');
   }

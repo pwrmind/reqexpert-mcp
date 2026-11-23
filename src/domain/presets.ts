@@ -83,4 +83,29 @@ export const DEFAULT_EXPERT_RULES: ExpertRule[] = [
     category: 'Полнота требований',
     active: true,
   },
+  {
+    id: 'T01',
+    name: 'Трассируемость Must-требований',
+    type: 'Трассируемость',
+    description:
+      'Каждое Must-требование должно иметь хотя бы одну привязку к коду реализации (codeRefs)',
+    checkLogic: `function checkRequirement(requirement) {
+      const issues = [];
+      if (requirement.priority === 'Must') {
+        const refs = Array.isArray(requirement.codeRefs) ? requirement.codeRefs : [];
+        if (refs.length === 0) {
+          issues.push('Must-требование не имеет codeRefs. Укажите путь к файлу реализации через link_code_ref.');
+        }
+      }
+      return {
+        pass: issues.length === 0,
+        message: issues.length === 0 ? 'Трассируемость в порядке' : 'Нарушена трассируемость',
+        issues
+      };
+    }`,
+    example: 'Must-требование без codeRefs',
+    strictness: 'high',
+    category: 'Трассируемость',
+    active: true,
+  },
 ];
