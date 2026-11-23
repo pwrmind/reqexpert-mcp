@@ -1,6 +1,167 @@
 {
   "projectName": "reqexpert",
-  "requirements": [],
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "Project State",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "FR-001 must be realized by implementing FR-007 and FR-008 as atomic components.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Provides global project state, including requirements, stakeholders, business rules, expert rules, and other metadata. This requirement is composite and should be decomposed into atomic requirements FR-007 (Atomic Requirements) and FR-008 (Project State Components).",
+      "dependencies": [],
+      "codeRefs": [
+        "src/core/store.ts"
+      ],
+      "verifiedBy": [
+        "TC-001"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "Requirements Management",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Requirements must be creatable, readable, updatable, deletable, and searchable via the provided tools.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Central hub for defining, retrieving, updating, deleting, and searching requirements.",
+      "dependencies": [],
+      "codeRefs": [
+        "src/index.ts"
+      ],
+      "verifiedBy": [
+        "TC-002"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "Business Rules",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Business rules must be configurable, applied, and enforceable via the business rule tools.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Implements business rules logic, allowing enforcement of rules across the system.",
+      "dependencies": [],
+      "codeRefs": [
+        "src/core/rule-sandbox.ts"
+      ],
+      "verifiedBy": [
+        "TC-003"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "Expert Rules",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Expert rules must be creatable, editable, and searchable via the expert rule tools.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Handles expert rules, enabling reasoning and meta‑level checks within the system.",
+      "dependencies": [],
+      "codeRefs": [
+        "src/domain/engine.ts"
+      ],
+      "verifiedBy": [
+        "TC-004"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "Ambiguity Detection",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Text must be analyzed for ambiguity and flagged according to D26 rule.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Detects ambiguous phrasing in textual requirements, applying D26 rule to reduce misunderstandings.",
+      "dependencies": [],
+      "codeRefs": [
+        "src/core/schema.ts"
+      ],
+      "verifiedBy": [
+        "TC-005"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "Impact Analysis",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Impact analysis must reveal dependent requirements, code intersections, and risk level for modifications.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Analyzes impact of changes across the codebase, identifying affected requirements, code sections, and test coverage.",
+      "dependencies": [],
+      "codeRefs": [
+        "src/domain/presets.ts"
+      ],
+      "verifiedBy": [
+        "TC-006"
+      ]
+    },
+    {
+      "id": "FR-007",
+      "title": "Atomic Requirements",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Each requirement must be atomic and indivisible; no composite sub‑requirements allowed.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "",
+      "dependencies": [],
+      "codeRefs": [
+        "src/core/store.ts"
+      ],
+      "verifiedBy": [
+        "TC-007"
+      ]
+    },
+    {
+      "id": "FR-008",
+      "title": "Project State Components",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Project State Components: store and retrieve global project state (requirements, stakeholders, business rules, expert rules, etc.) via core store, exposing resource 'project-state'.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "",
+      "dependencies": [],
+      "codeRefs": [
+        "src/core/store.ts"
+      ],
+      "verifiedBy": [
+        "TC-008"
+      ]
+    }
+  ],
   "stakeholders": [],
   "businessRules": [],
   "expertRules": [
@@ -36,7 +197,204 @@
       "strictness": "high",
       "category": "Полнота требований",
       "active": true
+    },
+    {
+      "id": "EX-001",
+      "name": "Requirement Completeness",
+      "type": "Expert",
+      "description": "Ensure each requirement is not composed of multiple sub‑requirements; each requirement must be atomic and indivisible.",
+      "checkLogic": "function NO_SUB_REQUIREMENTS(requirement) { const title = requirement.title || ''; const description = requirement.description || ''; const conjunctions = [' и ', ', а также ', ', также ', ', кроме ', ', плюс ']; const issues = []; if (conjunctions.some(c => title.includes(c) || description.includes(c))) { issues.push('Требование может быть составным. Разделите на несколько атомарных требований.'); } if (description.split('.').filter(Boolean).length > 3) { issues.push('Описание слишком длинное и может содержать несколько функциональностей.'); } return { pass: issues.length === 0, message: issues.length === 0 ? 'Требование атомарно' : 'Нарушение атомарности, ' + issues.join(',')}; }",
+      "example": "",
+      "strictness": "high",
+      "category": "Quality",
+      "active": true
     }
   ],
-  "activities": []
+  "activities": [
+    {
+      "type": "expertRule",
+      "message": "Обновлено правило ЭС EX-001",
+      "timestamp": 1795427021008
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-008",
+      "timestamp": 1795426998832
+    },
+    {
+      "type": "expertRule",
+      "message": "Обновлено правило ЭС EX-001",
+      "timestamp": 1795426992964
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-007",
+      "timestamp": 1795426966870
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-001",
+      "timestamp": 1795426936078
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-008: +test TC-008",
+      "timestamp": 1795426930428
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-008: +codeRef src/core/store.ts",
+      "timestamp": 1795426929378
+    },
+    {
+      "type": "expertRule",
+      "message": "Обновлено правило ЭС EX-001",
+      "timestamp": 1795426926456
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-008",
+      "timestamp": 1795426914955
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-007: +test TC-007",
+      "timestamp": 1795426909402
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-007: +codeRef src/core/store.ts",
+      "timestamp": 1795426908473
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-007",
+      "timestamp": 1795426899065
+    },
+    {
+      "type": "expertRule",
+      "message": "Добавлено правило ЭС EX-001",
+      "timestamp": 1795426725971
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-006: +test TC-006",
+      "timestamp": 1795426400866
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-005: +test TC-005",
+      "timestamp": 1795426399972
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-004: +test TC-004",
+      "timestamp": 1795426399095
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-003: +test TC-003",
+      "timestamp": 1795426398241
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-002: +test TC-002",
+      "timestamp": 1795426397398
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-001: +test TC-001",
+      "timestamp": 1795426396029
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-006",
+      "timestamp": 1795426340678
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-005",
+      "timestamp": 1795426339425
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-004",
+      "timestamp": 1795426338199
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-003",
+      "timestamp": 1795426336962
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-002",
+      "timestamp": 1795426335790
+    },
+    {
+      "type": "requirement",
+      "message": "Обновлено требование FR-001",
+      "timestamp": 1795426334081
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-006: +codeRef src/domain/presets.ts",
+      "timestamp": 1795426324533
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-005: +codeRef src/core/schema.ts",
+      "timestamp": 1795426321199
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-004: +codeRef src/domain/engine.ts",
+      "timestamp": 1795426320015
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-003: +codeRef src/core/rule-sandbox.ts",
+      "timestamp": 1795426318304
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-002: +codeRef src/index.ts",
+      "timestamp": 1795426315879
+    },
+    {
+      "type": "requirement",
+      "message": "Требование FR-001: +codeRef src/core/store.ts",
+      "timestamp": 1795426314658
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-006",
+      "timestamp": 1795426305114
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-005",
+      "timestamp": 1795426304423
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-004",
+      "timestamp": 1795426303771
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-003",
+      "timestamp": 1795426303054
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-002",
+      "timestamp": 1795426302335
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-001",
+      "timestamp": 1795426299513
+    }
+  ]
 }
