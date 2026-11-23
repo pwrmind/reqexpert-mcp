@@ -1,15 +1,6 @@
-import {
-  BusinessRule,
-  BusinessRuleSchema,
-  ExpertRule,
-  ExpertRuleSchema,
-  ProjectState,
-  Requirement,
-  RequirementSchema,
-  RuleCheckResult,
-  Stakeholder,
-  StakeholderSchema,
-} from '../core/schema.js';
+import { BusinessRuleSchema, ExpertRuleSchema, RequirementSchema, StakeholderSchema } from '../core/schema.js';
+import type { BusinessRule, ExpertRule, ProjectState, Requirement, RuleCheckResult, Stakeholder } from '../core/schema.js';
+
 import { ProjectStore } from '../core/store.js';
 import { executeRuleInSandbox } from '../core/rule-sandbox.js';
 
