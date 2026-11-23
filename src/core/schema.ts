@@ -42,8 +42,12 @@ export const StakeholderSchema = z.object({
 
 export const BusinessRuleSchema = z.object({
   id: z.string(),
-  type: z.string(),
+  name: z.string().default(''),
+  type: z.string().default('Бизнес-правило'),
   description: z.string(),
+  source: z.string().default(''),
+  active: z.boolean().default(true),
+  relatedRequirements: z.array(z.string()).default([]),
 });
 
 export const ExpertRuleSchema = z.object({
