@@ -2,46 +2,6 @@
   "projectName": "reqexpert",
   "requirements": [
     {
-      "id": "FR-001",
-      "title": "Project State",
-      "type": "Функциональное",
-      "priority": "Must",
-      "status": "Предложено",
-      "source": "",
-      "acceptanceCriteria": "FR-001 must be realized by implementing FR-007 and FR-008 as atomic components.",
-      "testability": "Высокая",
-      "stability": "Высокая",
-      "complexity": "Средняя",
-      "description": "Provides global project state, including requirements, stakeholders, business rules, expert rules, and other metadata. This requirement is composite and should be decomposed into atomic requirements FR-007 (Atomic Requirements) and FR-008 (Project State Components).",
-      "dependencies": [],
-      "codeRefs": [
-        "src/core/store.ts"
-      ],
-      "verifiedBy": [
-        "TC-001"
-      ]
-    },
-    {
-      "id": "FR-002",
-      "title": "Requirements Management",
-      "type": "Функциональное",
-      "priority": "Must",
-      "status": "Предложено",
-      "source": "",
-      "acceptanceCriteria": "Requirements must be creatable, readable, updatable, deletable, and searchable via the provided tools.",
-      "testability": "Высокая",
-      "stability": "Высокая",
-      "complexity": "Средняя",
-      "description": "Central hub for defining, retrieving, updating, deleting, and searching requirements.",
-      "dependencies": [],
-      "codeRefs": [
-        "src/index.ts"
-      ],
-      "verifiedBy": [
-        "TC-002"
-      ]
-    },
-    {
       "id": "FR-003",
       "title": "Business Rules",
       "type": "Функциональное",
@@ -62,26 +22,6 @@
       ]
     },
     {
-      "id": "FR-004",
-      "title": "Expert Rules",
-      "type": "Функциональное",
-      "priority": "Must",
-      "status": "Предложено",
-      "source": "",
-      "acceptanceCriteria": "Expert rules must be creatable, editable, and searchable via the expert rule tools.",
-      "testability": "Высокая",
-      "stability": "Высокая",
-      "complexity": "Средняя",
-      "description": "Handles expert rules, enabling reasoning and meta‑level checks within the system.",
-      "dependencies": [],
-      "codeRefs": [
-        "src/domain/engine.ts"
-      ],
-      "verifiedBy": [
-        "TC-004"
-      ]
-    },
-    {
       "id": "FR-005",
       "title": "Ambiguity Detection",
       "type": "Функциональное",
@@ -99,26 +39,6 @@
       ],
       "verifiedBy": [
         "TC-005"
-      ]
-    },
-    {
-      "id": "FR-006",
-      "title": "Impact Analysis",
-      "type": "Функциональное",
-      "priority": "Must",
-      "status": "Предложено",
-      "source": "",
-      "acceptanceCriteria": "Impact analysis must reveal dependent requirements, code intersections, and risk level for modifications.",
-      "testability": "Высокая",
-      "stability": "Высокая",
-      "complexity": "Средняя",
-      "description": "Analyzes impact of changes across the codebase, identifying affected requirements, code sections, and test coverage.",
-      "dependencies": [],
-      "codeRefs": [
-        "src/domain/presets.ts"
-      ],
-      "verifiedBy": [
-        "TC-006"
       ]
     },
     {
@@ -160,6 +80,182 @@
       "verifiedBy": [
         "TC-008"
       ]
+    },
+    {
+      "id": "FR-009",
+      "title": "Create Requirement",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Allows the creation of new requirements in the system.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-002: Create Requirement.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
+    },
+    {
+      "id": "FR-010",
+      "title": "Read Requirement",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Allows retrieving the details of an existing requirement.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-002: Read Requirement.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
+    },
+    {
+      "id": "FR-011",
+      "title": "Update Requirement",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Allows updating the fields of an existing requirement.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-002: Update Requirement.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
+    },
+    {
+      "id": "FR-012",
+      "title": "Delete Requirement",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Allows the deletion of an existing requirement.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-002: Delete Requirement.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
+    },
+    {
+      "id": "FR-013",
+      "title": "Search Requirement",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Allows searching for requirements based on various criteria.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-002: Search Requirement.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
+    },
+    {
+      "id": "FR-014",
+      "title": "Create Expert Rule",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Allows the creation of new expert rules.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-004: Create Expert Rule.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
+    },
+    {
+      "id": "FR-015",
+      "title": "Update Expert Rule",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Allows updating existing expert rules.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-004: Update Expert Rule.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
+    },
+    {
+      "id": "FR-016",
+      "title": "Search Expert Rule",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Allows searching for expert rules.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-004: Search Expert Rule.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
+    },
+    {
+      "id": "FR-017",
+      "title": "Identify dependent requirements",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Identifies all requirements that depend on the modified requirement.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-006: Identify dependent requirements.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
+    },
+    {
+      "id": "FR-018",
+      "title": "Identify code intersections",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Identifies code sections affected by the modification.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-006: Identify code intersections.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
+    },
+    {
+      "id": "FR-019",
+      "title": "Assess risk level",
+      "type": "Функциональное",
+      "priority": "Must",
+      "status": "Предложено",
+      "source": "",
+      "acceptanceCriteria": "Evaluates the risk level of a modification based on its potential impact.",
+      "testability": "Высокая",
+      "stability": "Высокая",
+      "complexity": "Средняя",
+      "description": "Decomposition of FR-006: Assess risk level.",
+      "dependencies": [],
+      "codeRefs": [],
+      "verifiedBy": []
     }
   ],
   "stakeholders": [],
@@ -170,7 +266,7 @@
       "name": "Проверка атомарности требований",
       "type": "Структура",
       "description": "Требование должно быть атомарным (описывать одну функциональность)",
-      "checkLogic": "function checkRequirement(requirement) {\n      const issues = [];\n      const title = requirement.title || '';\n      const description = requirement.description || '';\n      const conjunctions = [' и ', ', а также ', ', также ', ', кроме ', ', плюс ', ' and ', ', and ', ', as well as ', ' as well as ', ', also ', ', plus ', ' plus ', ', besides ', ', in addition to ', ', along with ', ' along with '];\n      if (conjunctions.some(c => title.includes(c) || description.includes(c))) {\n        issues.push('Требование может быть составным. Разделите на несколько атомарных требований.');\n      }\n      if (description.split('.').filter(Boolean).length > 3) {\n        issues.push('Описание слишком длинное и может содержать несколько функциональностей.');\n      }\n      return {\n        pass: issues.length === 0,\n        message: issues.length === 0 ? 'Требование атомарно' : 'Нарушение атомарности',\n        issues\n      };\n    }",
+      "checkLogic": "function checkRequirement(requirement) {\n      const issues = [];\n      const title = requirement.title || '';\n      const description = requirement.description || '';\n      const conjunctions = [' и ', ', а также ', ', также ', ', кроме ', ', плюс ', ' and ', ', and ', ', as well as ', ' as well as ', ', also ', ', plus ', ' plus ', ', besides ', ', in addition to ', ', along with ', ' along with '];\n      if (conjunctions.some(c => title.includes(c) || description.includes(c))) {\n        issues.push('Требование не может быть составным. Разделите на несколько атомарных требований.');\n      }\n      if (description.split('.').filter(Boolean).length > 3) {\n        issues.push('Описание слишком длинное и может содержать несколько функциональностей.');\n      }\n      return {\n        pass: issues.length === 0,\n        message: issues.length === 0 ? 'Требование атомарно' : 'Нарушение атомарности',\n        issues\n      };\n    }",
       "example": "Система должна позволять создавать и редактировать требования",
       "strictness": "high",
       "category": "Качество требований",
@@ -203,7 +299,7 @@
       "name": "Requirement Completeness",
       "type": "Expert",
       "description": "Ensure each requirement is not composed of multiple sub‑requirements; each requirement must be atomic and indivisible.",
-      "checkLogic": "function NO_SUB_REQUIREMENTS(requirement) { const title = requirement.title || ''; const description = requirement.description || ''; const conjunctions = [' и ', ', а также ', ', также ', ', кроме ', ', плюс ']; const issues = []; if (conjunctions.some(c => title.includes(c) || description.includes(c))) { issues.push('Требование может быть составным. Разделите на несколько атомарных требований.'); } if (description.split('.').filter(Boolean).length > 3) { issues.push('Описание слишком длинное и может содержать несколько функциональностей.'); } return { pass: issues.length === 0, message: issues.length === 0 ? 'Требование атомарно' : 'Нарушение атомарности, ' + issues.join(',')}; }",
+      "checkLogic": "function NO_SUB_REQUIREMENTS(requirement) { const title = requirement.title || ''; const description = requirement.description || ''; const conjunctions = [' и ', ', а также ', ', также ', ', кроме ', ', плюс ']; const issues = []; if (conjunctions.some(c => title.includes(c) || description.includes(c))) { issues.push('Требование не может быть составным. Разделите на несколько атомарных требований.'); } if (description.split('.').filter(Boolean).length > 3) { issues.push('Описание слишком длинное и может содержать несколько функциональностей.'); } return { pass: issues.length === 0, message: issues.length === 0 ? 'Требование атомарно' : 'Нарушение атомарности, ' + issues.join(',')}; }",
       "example": "",
       "strictness": "high",
       "category": "Quality",
@@ -211,6 +307,81 @@
     }
   ],
   "activities": [
+    {
+      "type": "requirement",
+      "message": "Удалено требование FR-001",
+      "timestamp": 1795535243738
+    },
+    {
+      "type": "requirement",
+      "message": "Удалено требование FR-006",
+      "timestamp": 1795535197842
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-019",
+      "timestamp": 1795535190927
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-018",
+      "timestamp": 1795535182945
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-017",
+      "timestamp": 1795535174709
+    },
+    {
+      "type": "requirement",
+      "message": "Удалено требование FR-004",
+      "timestamp": 1795535161793
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-016",
+      "timestamp": 1795535155212
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-015",
+      "timestamp": 1795535147461
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-014",
+      "timestamp": 1795535139607
+    },
+    {
+      "type": "requirement",
+      "message": "Удалено требование FR-002",
+      "timestamp": 1795535130658
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-013",
+      "timestamp": 1795535113678
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-012",
+      "timestamp": 1795535107839
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-011",
+      "timestamp": 1795535093911
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-010",
+      "timestamp": 1795535071706
+    },
+    {
+      "type": "requirement",
+      "message": "Добавлено требование FR-009",
+      "timestamp": 1795535051188
+    },
     {
       "type": "expertRule",
       "message": "Обновлено правило ЭС EX-001",
@@ -385,16 +556,6 @@
       "type": "requirement",
       "message": "Добавлено требование FR-003",
       "timestamp": 1795426303054
-    },
-    {
-      "type": "requirement",
-      "message": "Добавлено требование FR-002",
-      "timestamp": 1795426302335
-    },
-    {
-      "type": "requirement",
-      "message": "Добавлено требование FR-001",
-      "timestamp": 1795426299513
     }
   ]
 }

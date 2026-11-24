@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__reqexpert__get_requirement",
+      "mcp__reqexpert__add_requirement",
+      "mcp__reqexpert__delete_requirement",
+      "mcp__reqexpert__search_requirements"
+    ]
+  },
+  "$version": 4
+}

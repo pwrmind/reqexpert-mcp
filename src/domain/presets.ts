@@ -12,7 +12,7 @@ export const DEFAULT_EXPERT_RULES: ExpertRule[] = [
       const description = requirement.description || '';
       const conjunctions = [' и ', ', а также ', ', также ', ', кроме ', ', плюс ', ' and ', ', and ', ', as well as ', ' as well as ', ', also ', ', plus ', ' plus ', ', besides ', ', in addition to ', ', along with ', ' along with '];
       if (conjunctions.some(c => title.includes(c) || description.includes(c))) {
-        issues.push('Требование может быть составным. Разделите на несколько атомарных требований.');
+        issues.push('Требование не может быть составным. Разделите на несколько атомарных требований.');
       }
       if (description.split('.').filter(Boolean).length > 3) {
         issues.push('Описание слишком длинное и может содержать несколько функциональностей.');
