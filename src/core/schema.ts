@@ -1,4 +1,4 @@
-import * as z from 'zod/v4';
+import { z } from 'zod';
 
 export const RequirementTypeSchema = z.enum([
   'Функциональное',
@@ -31,19 +31,12 @@ export const RequirementSchema = z.object({
   complexity: LevelSchema.default('Средняя'),
   description: z.string().default(''),
   dependencies: z.array(z.string()).default([]),
-  // v1.2: трассировка
-  codeRefs: z
-    .array(z.string())
-    .default([])
-    .describe('Пути к файлам реализации относительно workspace'),
-  verifiedBy: z
-    .array(z.string())
-    .default([])
-    .describe('ID тест-кейсов / тестов, верифицирующих требование'),
+  codeRefs: z.array(z.string()).default([]),
+  verifiedBy: z.array(z.string()).default([]),
 });
 
 export const StakeholderSchema = z.object({
-  id: z.number(),
+  id: z.number().int().positive(),
   name: z.string().min(1),
   role: z.string(),
   involvement: LevelSchema.default('Средняя'),
@@ -53,51 +46,48 @@ export const BusinessRuleSchema = z.object({
   id: z.string(),
   name: z.string().default(''),
   type: z.string().default('Бизнес-правило'),
-  description: z.string(),
+  description: z.string().min(1),
   source: z.string().default(''),
   active: z.boolean().default(true),
   relatedRequirements: z.array(z.string()).default([]),
 });
 
-export const ExpertRuleSchema = z.object({
-  id: z.string(),
-  name: z.string(),
+export const ActivityEventSchema = z.object({
   type: z.string(),
-  description: z.string(),
-  checkLogic: z.string(),
-  example: z.string().default(''),
-  strictness: z.enum(['low', 'medium', 'high']).default('medium'),
-  category: z.string().default('Качество требований'),
-  active: z.boolean().default(true),
+  message: z.string(),
+  timestamp: z.number(),
+  requirementId: z.string().optional(),
+  stakeholderId: z.number().optional(),
+  businessRuleId: z.string().optional(),
 });
 
-export const ProjectStateSchema = z.object({
+export const RuleConfigSchema = z.object({
+  enabled: z.boolean().default(true),
+  options: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const ProjectSettingsSchema = z.object({
+  rules: z.record(z.string(), RuleConfigSchema).default({}),
+});
+
+export const ProjectMetaSchema = z.object({
+  schemaVersion: z.number().int().positive().default(2),
   projectName: z.string().default('Новый проект'),
-  requirements: z.array(RequirementSchema).default([]),
-  stakeholders: z.array(StakeholderSchema).default([]),
-  businessRules: z.array(BusinessRuleSchema).default([]),
-  expertRules: z.array(ExpertRuleSchema).default([]),
-  activities: z
-    .array(
-      z.object({
-        type: z.string(),
-        message: z.string(),
-        timestamp: z.number(),
-      })
-    )
-    .default([]),
+  settings: ProjectSettingsSchema.default({ rules: {} }),
 });
 
 export type Requirement = z.infer<typeof RequirementSchema>;
 export type Stakeholder = z.infer<typeof StakeholderSchema>;
 export type BusinessRule = z.infer<typeof BusinessRuleSchema>;
-export type ExpertRule = z.infer<typeof ExpertRuleSchema>;
-export type ProjectState = z.infer<typeof ProjectStateSchema>;
+export type ActivityEvent = z.infer<typeof ActivityEventSchema>;
+export type ProjectMeta = z.infer<typeof ProjectMetaSchema>;
+export type ProjectSettings = z.infer<typeof ProjectSettingsSchema>;
+export type RuleConfig = z.infer<typeof RuleConfigSchema>;
 
-export interface RuleCheckResult {
-  ruleId: string;
-  ruleName: string;
-  pass: boolean;
-  message: string;
-  issues: string[];
+export interface ProjectSnapshot {
+  readonly meta: ProjectMeta;
+  readonly requirements: readonly Requirement[];
+  readonly stakeholders: readonly Stakeholder[];
+  readonly businessRules: readonly BusinessRule[];
+  readonly activities: readonly ActivityEvent[];
 }
